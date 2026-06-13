@@ -42,3 +42,17 @@
 	- **WHY?**
 		1. Anything we learn from the data must be only from the training data, then applied to the testing data. Normalization parameters like mean, std are all learned parameters. We fit the model on them in the training data and then apply it to both validation and testing data.
 		2. Test data is supposed to simulate unseen data. If you compute stats on the full dataset before splitting, test data has already leaked information into your normalization. This results in misleading accuracy and doesn't generalize the model to true unseen data.
+
+		## 3. Column-wise Analysis (added)
+
+		I added per-column exploratory analysis for the main features: `MedInc`, `HouseAge`, `AveRooms`, `AveBedrms`, `Population`, and `AveOccup`.
+
+		- **What was computed for each column:** `describe()` output, mean, median, Q1 (25th percentile), Q3 (75th percentile), IQR (Q3 - Q1), lower/upper IQR bounds (`Q1 - 1.5*IQR`, `Q3 + 1.5*IQR`), count of outliers below the lower bound and above the upper bound, and a simple skewness check using `mean` vs `median` (treated as symmetric when `mean ≈ median` with a small tolerance).
+
+		- **Visualization:** A KDE dashboard (2x3 subplots) was added to visualize each column's distribution side-by-side for easy inspection. A separate overlay plot option (all KDEs on one axis) is available in the notebook but note that differences in scale make the overlay hard to read without normalization.
+
+		- **Practical notes / findings:**
+			- Columns have different magnitudes and skewness. In particular, `Population` shows a very wide range and strong right skew (consider `log` transform for visualization or modeling).
+			- Small-scale features (e.g., `AveBedrms`, `AveRooms`, `HouseAge`) can appear flattened when overlaid with large-scale features; use per-column subplots or standardize the features before overlaying.
+
+		See the notebook `data_cleaning.ipynb` for the exact code and printed statistics.
